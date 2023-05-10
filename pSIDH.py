@@ -1,10 +1,10 @@
 from itertools import combinations
-from sage.all import CRT, DLP, ZZ, Zmod, gcd, inverse_mod, mod
+from sage.all import CRT, DLP, ZZ, Zmod, factor, gcd, inverse_mod, mod
 
 from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
 from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, IdealModConstraint, RepresentIntegerHeuristic, StrongApproximationHeuristic
-from sqisign.setup import B, Bτ, O0, eτ, p, ω, l
+from sqisign.setup import B, Bτ, E0, O0, eτ, p, ω, l
 from sqisign.utilities import inert_prime
 
 
@@ -164,3 +164,38 @@ def KeyGeneration():
     assert all([isogeny_i.domain() == E for isogeny_i in isogenies])
 
     return (E, pi), (I, D)
+
+
+def KeyExchange(I, D_prime, E_prime, pi):
+    D = I.norm()
+
+    assert(D != D_prime)
+
+    O0, isogenies = pi
+
+    generating_fam = SmoothGen(O0, D_prime)
+
+    # SuborderVerification()
+
+    J = O0 * 1
+
+    theta = IdealSuborderNormEquation(D_prime, J, I)
+
+    B = p^2 * D^9 * J.norm()^2
+    T = B + 1
+    min_smoothness_bound = factor(T)[-1][0]
+    for potential_T in range(B + 2, 2 * B):
+        smoothness_bound = factor(potential_T)[-1][0]
+        if smoothness_bound < min_smoothness_bound:
+            T = potential_T
+            min_smoothness_bound = smoothness_bound
+    T_facts = factor(T)
+
+    # G = ___
+    for prime, multiplicity in T_facts:
+        # J_i = O0 * ___ + O0 * prime^multiplicity
+        G += SuborderEvaluation(E0, E_prime, pi, D_prime, J_i)
+
+    psi = E_prime.isogeny(G)
+
+    return psi.codomain().j_invariant()
