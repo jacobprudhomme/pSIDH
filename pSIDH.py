@@ -134,6 +134,34 @@ def CheckTrace(M, E, isogenies, generating_fam):
 
     return True
 
+def SuborderVerification(M, x, pi):
+    D, E1, E2 = x
+    O, isogenies = pi
+
+    if O.discriminant() != p:
+        return False
+
+    generating_fam = SmoothGen(O, D)
+    J = ConnectingIdeal(O0, O)
+    L = EquivalentPrimeIdealHeuristic(J)
+    while L is None:
+        L = EquivalentPrimeIdealHeuristic(J)
+
+    psi = IdealToIsogenyFromKLPT(L)
+    E1_prime = psi.codomain()
+    if E1.j_invariant() != E1_prime.j_invariant() or E1.j_invariant() != E1_prime.j_invariant()^p:
+        return False
+
+    for phi_i, theta_i in zip(isogenies, generating_fam):
+        assert(phi_i.degree() == theta_i.norm())
+
+        F_i = phi_i.codomain()
+
+        if F_i.j_invariant() != E2.j_invariant():
+            return False
+
+    return CheckTrace(M, E2, isogenies, generating_fam)
+
 def SuborderEvaluation(E1, E2, pi, D, J):
     O, isogenies = pi
 
