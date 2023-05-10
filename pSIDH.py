@@ -119,6 +119,21 @@ def IdealSuborderNormEquation(D, I, J):
     return mewone * mewtwo
 
 
+def CheckTrace(M, E, isogenies, generating_fam):
+    assert(len(isogenies) == len(generating_fam))
+
+    P, Q = E(0).division_points(M).basis()  # TURN INTO GROUP???
+
+    for i in range(1, len(isogenies) + 1):
+        theta_I = prod(generating_fam[:i])
+        phi_I = prod(isogenies[:i])
+
+        for R in [P, Q]:
+            if phi_I(R) + phi_I.conjugate()(R) != theta_I.trace() * R:
+                return False
+
+    return True
+
 def SuborderEvaluation(E1, E2, pi, D, J):
     O, isogenies = pi
 
