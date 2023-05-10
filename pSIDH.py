@@ -1,6 +1,7 @@
 from itertools import combinations
 from sage.all import ZZ
 
+from sqisign.deuring import IdealToIsogenyFromKLPT
 from sqisign.KLPT import EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, RepresentIntegerHeuristic
 from sqisign.setup import B, Bτ, O0, eτ, p, ω, l
 from sqisign.utilities import inert_prime
@@ -68,3 +69,19 @@ def SmoothGen(O, D):
                     break
 
     return generating_fam
+
+
+def IdealToSuborder(I):
+    # assert(I.quaternion_algebra() == QuaternionAlgebra(_, _, _))
+
+    D = I.norm()
+    O = I.left_order()
+    O_prime = I.right_order()
+
+    generating_fam = SmoothGen(O, D)
+    isogenies = []
+    for theta_i in generating_fam:
+        phi_i = IdealToIsogenyFromKLPT(O_prime * theta_i)
+        isogenies.append(phi_i)
+
+    return O, isogenies  # Wait, these are isogenies... Shouldn't they be suborders? And later compute isogenies using Velu's formulas?
