@@ -1,4 +1,4 @@
-from itertools import combinations
+from itertools import chain, combinations
 from sage.all import CRT, DLP, GF, ZZ, Zmod, factor, gcd, inverse_mod, mod
 
 from deuring import randomideal
@@ -99,17 +99,30 @@ def IdealSuborderNormEquation(D, I, J):
     return mewone * mewtwo
 
 
+def all_proper_nonempty_subsets(iter):
+    lst = list(iter)
+    length = len(lst)
+
+    return chain.from_iterable(
+        combinations(lst, size)
+        for size in range(1, length)
+    )
+
 def CheckTrace(M, E, isogenies, generating_fam):
     assert(len(isogenies) == len(generating_fam))
 
     P, Q = E(0).division_points(M).basis()  # TURN INTO GROUP???
 
-    for i in range(1, len(isogenies) + 1):
-        theta_I = prod(generating_fam[:i])
-        phi_I = prod(isogenies[:i])
+    for I in all_proper_nonempty_subsets(range(len(isogenies))):  # IS IT REALLY JUST PROPER SUBSETS??? ANTONIN
+        theta_I = generating_fam[0]
+        phi_I = isogenies[0]
+        for i in I[1:]:
+            theta_I *= generating_fam[i]
+            phi_I *= isogenies[i]
 
         for R in [P, Q]:
-            if phi_I(R) + phi_I.conjugate()(R) != theta_I.trace() * R:
+            phi_I_hat = phi_I.dual()
+            if phi_I(R) + phi_I_hat(R) != theta_I.trace() * R:
                 return False
 
     return True
