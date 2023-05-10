@@ -3,39 +3,19 @@ from sage.all import CRT, DLP, GF, ZZ, Zmod, factor, gcd, inverse_mod, mod
 
 from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
-from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, IdealModConstraint, RepresentIntegerHeuristic, StrongApproximationHeuristic
-from sqisign.setup import B, Bτ, E0, O0, eτ, p, ω, l
-from sqisign.utilities import inert_prime
+from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, IdealModConstraint, StrongApproximationHeuristic
+from sqisign.setup import B, E0, O0, p
 
 
 def ConnectingIdeal(O1, O2):
-    # Compute a random prime ≤ Bτ which is inert
-    # in R[ω].
-    # Note: this is the same as picking p ≡ 3 mod 4
-    Nl = l^eτ
+    assert(O1.is_maximal())  # Is this necessary?
 
-    # Stop infinite loops
-    for _ in range(1000):
-        Nτ = inert_prime(Bτ, -ZZ(ω^2))
-        # We need the product to be large enough for
-        # RepresentIntegerHeuristic.
-        if Nτ * Nl > 2 * p:
-            break
+    N = O1.intersection(O2).index_in(O1)
+    I = N * O1 * O2
 
-    # Compute an endomorphism γ of norm Nτ l^eτ
-    # Nτ < Bτ
-    γ = None
+    # assert(I.is_integral())  # Is this necessary?
+    assert(I.left_order() == O1 and I.right_order() == O2)
 
-    # Stop infinite loops
-    for _ in range(1000):
-        γ = RepresentIntegerHeuristic(Nτ * Nl, parity=True)
-        if γ is not None:
-            break
-
-    if γ is None:
-        exit("Never found an alg element with norm (Nτ * Nl), Exiting...")
-
-    I = O1 * γ + O2 * Nτ
     return I
 
 
