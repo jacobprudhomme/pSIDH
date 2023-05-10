@@ -1,3 +1,6 @@
 [submodule "sqisign"]
 	path = sqisign
 	url = git@github.com:LearningToSQI/SQISign-SageMath.git
+[submodule "deuring"]
+	path = deuring
+	url = git@github.com:friends-of-quaternions/deuring.git
