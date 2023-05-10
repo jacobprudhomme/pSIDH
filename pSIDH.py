@@ -1,8 +1,8 @@
 from itertools import combinations
-from sage.all import ZZ
+from sage.all import CRT, ZZ, Zmod, gcd, inverse_mod, mod
 
 from sqisign.deuring import IdealToIsogenyFromKLPT
-from sqisign.KLPT import EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, RepresentIntegerHeuristic
+from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, IdealModConstraint, RepresentIntegerHeuristic, StrongApproximationHeuristic
 from sqisign.setup import B, Bτ, O0, eτ, p, ω, l
 from sqisign.utilities import inert_prime
 
@@ -85,3 +85,34 @@ def IdealToSuborder(I):
         isogenies.append(phi_i)
 
     return O, isogenies  # Wait, these are isogenies... Shouldn't they be suborders? And later compute isogenies using Velu's formulas?
+
+
+def IdealSuborderNormEquation_helper(D, I, N, J, N_prime):
+    # SELECT A RANDOM CLASS???
+    mewtwo = StrongApproximationHeuristic(D, C2, D2)
+    while mewtwo is None or gcd(mewtwo.norm(), N_prime) == 1:
+        # SELECT A RANDOM CLASS???
+        mewtwo = StrongApproximationHeuristic(D, C2, D2)
+
+    C0, D0 = EichlerModConstraint(mewtwo, I)
+    C3, D3 = IdealModConstraint(mewtwo, J)
+
+    D2_prime = Zmod(D).random_element()
+    C2_prime = mod(-D2_prime * C2 * inverse_mod(D2, D), D)
+
+    C1 = CRT([C0, C2_prime, C3], [N, D, N_prime])
+    D1 = CRT([D0, D2_prime, D3], [N, D, N_prime])
+
+    return StrongApproximationHeuristic(N * D * N_prime, C1, D1), mewtwo
+
+def IdealSuborderNormEquation(D, I, J):
+    N = I.norm()
+    N_prime = J.norm()
+
+    assert(gcd(N, N_prime) == 1 and gcd(N, D) == 1 and gcd(N_prime, D) == 1)
+
+    mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
+    while mewone is None:
+        mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
+
+    return mewone * mewtwo
