@@ -1,0 +1,3 @@
+[submodule "sqisign"]
+	path = sqisign
+	url = git@github.com:LearningToSQI/SQISign-SageMath.git
