@@ -1,5 +1,5 @@
 from itertools import combinations
-from sage.all import CRT, DLP, ZZ, Zmod, factor, gcd, inverse_mod, mod
+from sage.all import CRT, DLP, GF, ZZ, Zmod, factor, gcd, inverse_mod, mod
 
 from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
@@ -168,7 +168,8 @@ def SuborderEvaluation(E1, E2, pi, D, J):
     if J.left_order() != O:
         return None
 
-    # SuborderVerification()
+    if not SuborderVerification(E1.base_extend(GF(p^m)).order(), (D, E1, E2), pi):  # WHAT IS m HERE??? ANTONIN
+        return None
 
     generating_fam = SmoothGen(O, D)
     L = ConnectingIdeal(O0, O)
@@ -218,7 +219,8 @@ def KeyExchange(I, D_prime, E_prime, pi):
 
     generating_fam = SmoothGen(O0, D_prime)
 
-    # SuborderVerification()
+    if not SuborderVerification(E_prime.base_extend(GF(p^m)).order(), (D_prime, E0, E_prime), pi):  # WHAT IS m HERE??? ANTONIN
+        return None
 
     J = O0 * 1
 
@@ -237,7 +239,7 @@ def KeyExchange(I, D_prime, E_prime, pi):
     # G = ___
     for prime, multiplicity in T_facts:
         # J_i = O0 * ___ + O0 * prime^multiplicity
-        G += SuborderEvaluation(E0, E_prime, pi, D_prime, J_i)
+        G += SuborderEvaluation(E0, E_prime, pi, D_prime, J_i)  # THIS CAN BE None, HOW SHOULD THIS BE HANDLED??? ANTONIN
 
     psi = E_prime.isogeny(G)
 
