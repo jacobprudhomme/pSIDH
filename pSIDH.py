@@ -1,6 +1,7 @@
 from itertools import combinations
 from sage.all import CRT, ZZ, Zmod, gcd, inverse_mod, mod
 
+from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
 from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, IdealModConstraint, RepresentIntegerHeuristic, StrongApproximationHeuristic
 from sqisign.setup import B, Bτ, O0, eτ, p, ω, l
@@ -116,3 +117,19 @@ def IdealSuborderNormEquation(D, I, J):
         mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
 
     return mewone * mewtwo
+
+
+def KeyGeneration():
+    I = randomideal(O0)
+    D = I.norm()
+    while not D.is_prime():
+        I = randomideal(O0)
+        D = I.norm()
+
+    pi = IdealToSuborder(I)
+    _, isogenies = pi
+
+    E = isogenies[0].domain()
+    assert all([isogeny_i.domain() == E for isogeny_i in isogenies])
+
+    return (E, pi), (I, D)
