@@ -33,11 +33,10 @@ def SmoothGen(O, D):
     found_fam = False
     generating_fam = []
     while not found_fam:
-        I = EquivalentPrimeIdealHeuristic(I0) # Same as RandomEquivalentPrimeIdeal()
+        I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True) # Same as RandomEquivalentPrimeIdeal()?
         while I is None:
-            I = EquivalentPrimeIdealHeuristic(I0) # Same as RandomEquivalentPrimeIdeal()
+            I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True) # Same as RandomEquivalentPrimeIdeal()?
 
-        alpha = I / I0
         theta = EquivalentRandomEichlerIdeal(I, D) # Same as EichlerSuborderNormEquation()
 
         L.add(alpha * theta * alpha^(-1))
@@ -166,11 +165,10 @@ def SuborderEvaluation(E1, E2, pi, D, J):
 
     generating_fam = SmoothGen(O, D)
     L = ConnectingIdeal(O0, O)
-    I = EquivalentPrimeIdealHeuristic(L)  # Same as RandomEquivalentPrimeIdeal()?
+    I, _, alpha = EquivalentPrimeIdealHeuristic(L, random_elements=True)  # Same as RandomEquivalentPrimeIdeal()?
     while I is None:
-        I = EquivalentPrimeIdealHeuristic(L)
+        I, _, alpha = EquivalentPrimeIdealHeuristic(L, random_elements=True)
 
-    alpha = I.norm() / L.norm()  # IS THIS RIGHT??? ANTONIN
     beta = IdealSuborderNormEquation(D, I, alpha^(-1) * J * alpha)
 
     # EXPRESS SOMETHING AS LINEAR COMBINATION OF GENERATING FAMILY??? ANTONIN
