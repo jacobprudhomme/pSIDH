@@ -1,9 +1,9 @@
 from itertools import chain, combinations
-from sage.all import CRT, DLP, GF, ZZ, Zmod, factor, gcd, inverse_mod, mod
+from sage.all import CRT, DLP, GF, ProjectiveSpace, ZZ, Zmod, choice, factor, gcd, inverse_mod, mod
 
 from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
-from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, EquivalentRandomEichlerIdeal, IdealModConstraint, StrongApproximationHeuristic
+from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, IdealModConstraint, StrongApproximationHeuristic
 from sqisign.setup import B, E0, O0, p
 
 
@@ -20,9 +20,14 @@ def ConnectingIdeal(B, O1, O2):
 
 
 def EichlerSuborderNormEquation_helper(D, I, N):
-    # SELECT A RANDOM CLASS???
+    S = ProjectiveSpace(1, GF(D)).rational_points()
+
+    P = choice(S)
+    C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
     mewtwo = StrongApproximationHeuristic(D, C2, D2)
     while mewtwo is None:
+        P = choice(S)
+        C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
         mewtwo = StrongApproximationHeuristic(D, C2, D2)
 
     C0, D0 = EichlerModConstraint(mewtwo, I)
@@ -38,7 +43,7 @@ def EichlerSuborderNormEquation_helper(D, I, N):
 def EichlerSuborderNormEquation(D, I):
     N = I.norm()
 
-    assert gcd(N, D) == 1
+    assert gcd(N, D) == 1, 'N and D are not coprime'
 
     mewone, mewtwo = EichlerSuborderNormEquation_helper(D, I, N)
     while mewone is None:
@@ -95,10 +100,14 @@ def IdealToSuborder(I):
 
 
 def IdealSuborderNormEquation_helper(D, I, N, J, N_prime):
-    # SELECT A RANDOM CLASS???
+    S = ProjectiveSpace(1, GF(D)).rational_points()
+
+    P = choice(S)
+    C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
     mewtwo = StrongApproximationHeuristic(D, C2, D2)
     while mewtwo is None or gcd(mewtwo.norm(), N_prime) == 1:
-        # SELECT A RANDOM CLASS???
+        P = choice(S)
+        C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
         mewtwo = StrongApproximationHeuristic(D, C2, D2)
 
     C0, D0 = EichlerModConstraint(mewtwo, I)
@@ -116,13 +125,13 @@ def IdealSuborderNormEquation(D, I, J):
     N = I.norm()
     N_prime = J.norm()
 
-    assert(gcd(N, N_prime) == 1 and gcd(N, D) == 1 and gcd(N_prime, D) == 1)
+    assert gcd(N, N_prime) == 1 and gcd(N, D) == 1 and gcd(N_prime, D) == 1, "N, N' and D are not coprime"
 
     mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
     while mewone is None:
         mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
 
-    return mewone * mewtwo
+    return mewtwo * mewone
 
 
 def all_proper_nonempty_subsets(iter):
