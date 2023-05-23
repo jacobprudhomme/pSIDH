@@ -8,15 +8,13 @@ from sqisign.setup import B, E0, O0, p
 
 
 def ConnectingIdeal(B, O1, O2):
-    # Are both ideals maximal?
-    assert(O1.discriminant() == B.discriminant(), 'O1 is not a maximal ideal')
-    assert(O2.discriminant() == B.discriminant(), 'O2 is not a maximal ideal')
+    assert O1.discriminant() == B.discriminant(), 'O1 is not a maximal ideal'
+    assert O2.discriminant() == B.discriminant(), 'O2 is not a maximal ideal'
 
     N = O1.intersection(O2).free_module().index_in(O1.free_module())  # Sage orders in quaternion algebras don't directly support index_in()
     I = N * O1 * O2
 
-    # Is the ideal an O1,O2-connecting ideal?
-    assert(I.left_order() == O1 and I.right_order() == O2, 'I is not an O1,O2-connecting ideal')
+    assert I.left_order() == O1 and I.right_order() == O2, 'I is not an O1,O2-connecting ideal'
 
     return I
 
