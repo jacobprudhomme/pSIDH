@@ -19,6 +19,33 @@ def ConnectingIdeal(B, O1, O2):
     return I
 
 
+def EichlerSuborderNormEquation_helper(D, I, N):
+    # SELECT A RANDOM CLASS???
+    mewtwo = StrongApproximationHeuristic(D, C2, D2)
+    while mewtwo is None:
+        mewtwo = StrongApproximationHeuristic(D, C2, D2)
+
+    C0, D0 = EichlerModConstraint(mewtwo, I)
+
+    D2_prime = Zmod(D)
+    C2_prime = mod(-D2_prime * C2 * inverse_mod(D2, D), D)
+
+    C1 = CRT([C0, C2_prime], [N, D])
+    D1 = CRT([D0, D2_prime], [N, D])
+
+    return StrongApproximationHeuristic(N * D, C1, D1), mewtwo
+
+def EichlerSuborderNormEquation(D, I):
+    N = I.norm()
+
+    assert gcd(N, D) == 1
+
+    mewone, mewtwo = EichlerSuborderNormEquation_helper(D, I, N)
+    while mewone is None:
+        mewone, mewtwo = EichlerSuborderNormEquation_helper(D, I, N)
+
+    return mewtwo * mewone
+
 def SmoothGen(O, D):
     # N = a subset of the natural numbers following certain constraints
     # O = maximal order
@@ -37,7 +64,7 @@ def SmoothGen(O, D):
         while I is None:
             I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True) # Same as RandomEquivalentPrimeIdeal()?
 
-        theta = EquivalentRandomEichlerIdeal(I, D) # Same as EichlerSuborderNormEquation()
+        theta = EichlerSuborderNormEquation(D, I)
 
         L.add(alpha * theta * alpha^(-1))
 
