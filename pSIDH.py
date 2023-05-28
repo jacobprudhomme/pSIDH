@@ -208,7 +208,8 @@ def SuborderEvaluation(p, B, O0, E1, E2, pi, D, J):
     generating_set = [B.one()] + [prod(subset) for subset in all_proper_nonempty_subsets(generating_fam)]
     coeffs = multidimensional_discrete_log(generating_set, alpha * beta * alpha.inverse())
 
-    P, Q = E2(0).division_points(J.norm()).basis()  # TURN INTO GROUP???
+    # Is E2 guaranteed to have 2 generators (i.e. it is the product of 2 cyclic groups)?
+    P, Q = [((p + 1) / J.norm()) * G for G in E2.gens()]  # From https://github.com/jack4818/Castryck-Decru-SageMath
 
     R = S = E2(0)
     isogeny_compositions = [E2.isogeny(E2(0))] + [prod(subset) for subset in all_proper_nonempty_subsets(isogenies)]
