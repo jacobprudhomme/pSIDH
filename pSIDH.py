@@ -138,7 +138,7 @@ def all_proper_nonempty_subsets(iter):
     )
 
 def CheckTrace(M, E, isogenies, generating_fam):
-    assert(len(isogenies) == len(generating_fam))
+    assert len(isogenies) == len(generating_fam), 'The number of isogenies and elements in the generating family should be the same'
 
     P, Q = E(0).division_points(M).basis()  # TURN INTO GROUP???
 
@@ -175,7 +175,7 @@ def SuborderVerification(B, O0, M, x, pi):
         return False
 
     for phi_i, theta_i in zip(isogenies, generating_fam):
-        assert(phi_i.degree() == theta_i.norm())
+        assert phi_i.degree() == theta_i.norm(), 'The degree of the isogeny φᵢ should be the same as the norm of the element of the generating family θᵢ'
 
         F_i = phi_i.codomain()
 
@@ -235,7 +235,7 @@ def KeyGeneration(B, O0):
     _, isogenies = pi
 
     E = isogenies[0].domain()
-    assert all([isogeny_i.domain() == E for isogeny_i in isogenies])
+    assert all([isogeny_i.domain() == E for isogeny_i in isogenies]), 'All isogenies should map from the curve E'
 
     return (E, pi), (I, D)
 
@@ -243,7 +243,7 @@ def KeyGeneration(B, O0):
 def KeyExchange(p, B, E0, O0, I, D_prime, E_prime, pi):
     D = I.norm()
 
-    assert(D != D_prime)
+    assert D != D_prime, "D and D' should be different"
 
     O, isogenies = pi
 
