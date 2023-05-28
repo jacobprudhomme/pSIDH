@@ -4,7 +4,6 @@ from sage.all import CRT, DLP, GF, ProjectiveSpace, ZZ, Zmod, choice, factor, gc
 from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
 from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, IdealModConstraint, StrongApproximationHeuristic
-from sqisign.setup import B, E0, O0, p
 
 
 def ConnectingIdeal(B, O1, O2):
@@ -51,14 +50,9 @@ def EichlerSuborderNormEquation(D, I):
 
     return mewtwo * mewone
 
-def SmoothGen(O, D):
-    # N = a subset of the natural numbers following certain constraints
-    # O = maximal order
-    # D = prime
-    # Returns a generating family theta_1, theta_2, theta_3 for Z + DO, where n(theta_j) is in N
-
+def SmoothGen(B, O0, O, D):
     L = set()
-    I0 = ConnectingIdeal(O0, O)
+    I0 = ConnectingIdeal(B, O0, O)
 
     target_order = ZZ + D * O
 
@@ -83,14 +77,14 @@ def SmoothGen(O, D):
     return generating_fam
 
 
-def IdealToSuborder(I):
+def IdealToSuborder(B, O0, I):
     # assert(I.quaternion_algebra() == QuaternionAlgebra(_, _, _))
 
     D = I.norm()
     O = I.left_order()
     O_prime = I.right_order()
 
-    generating_fam = SmoothGen(O, D)
+    generating_fam = SmoothGen(B, O0, O, D)
     isogenies = []
     for theta_i in generating_fam:
         phi_i = IdealToIsogenyFromKLPT(O_prime * theta_i)
@@ -162,15 +156,15 @@ def CheckTrace(M, E, isogenies, generating_fam):
 
     return True
 
-def SuborderVerification(M, x, pi):
+def SuborderVerification(B, O0, M, x, pi):
     D, E1, E2 = x
     O, isogenies = pi
 
     if O.discriminant() != p:
         return False
 
-    generating_fam = SmoothGen(O, D)
-    J = ConnectingIdeal(O0, O)
+    generating_fam = SmoothGen(B, O0, O, D)
+    J = ConnectingIdeal(B, O0, O)
     L = EquivalentPrimeIdealHeuristic(J)
     while L is None:
         L = EquivalentPrimeIdealHeuristic(J)
@@ -194,17 +188,17 @@ def SuborderVerification(M, x, pi):
 def multidimensional_discrete_log(generators, target):
     raise NotImplementedError()
 
-def SuborderEvaluation(E1, E2, pi, D, J):
+def SuborderEvaluation(p, B, O0, E1, E2, pi, D, J):
     O, isogenies = pi
 
     if J.left_order() != O:
         return None
 
-    if not SuborderVerification(E1.base_extend(GF(p^m)).order(), (D, E1, E2), pi):  # WHAT IS m HERE??? ANTONIN
+    if not SuborderVerification(B, O0, E1.base_extend(GF(p^m)).order(), (D, E1, E2), pi):  # WHAT IS m HERE??? ANTONIN
         return None
 
-    generating_fam = SmoothGen(O, D)
-    L = ConnectingIdeal(O0, O)
+    generating_fam = SmoothGen(B, O0, O, D)
+    L = ConnectingIdeal(B, O0, O)
     I, _, alpha = EquivalentPrimeIdealHeuristic(L, random_elements=True)  # Same as RandomEquivalentPrimeIdeal()?
     while I is None:
         I, _, alpha = EquivalentPrimeIdealHeuristic(L, random_elements=True)
@@ -230,14 +224,14 @@ def SuborderEvaluation(E1, E2, pi, D, J):
     return P - a * Q
 
 
-def KeyGeneration():
+def KeyGeneration(B, O0):
     I = randomideal(O0)
     D = I.norm()
     while not D.is_prime():
         I = randomideal(O0)
         D = I.norm()
 
-    pi = IdealToSuborder(I)
+    pi = IdealToSuborder(B, O0, I)
     _, isogenies = pi
 
     E = isogenies[0].domain()
@@ -246,19 +240,19 @@ def KeyGeneration():
     return (E, pi), (I, D)
 
 
-def KeyExchange(I, D_prime, E_prime, pi):
+def KeyExchange(p, B, E0, O0, I, D_prime, E_prime, pi):
     D = I.norm()
 
     assert(D != D_prime)
 
-    O0, isogenies = pi
+    O, isogenies = pi
 
-    generating_fam = SmoothGen(O0, D_prime)
+    generating_fam = SmoothGen(B, O0, O, D_prime)
 
-    if not SuborderVerification(E_prime.base_extend(GF(p^m)).order(), (D_prime, E0, E_prime), pi):  # WHAT IS m HERE??? ANTONIN
+    if not SuborderVerification(B, O0, E_prime.base_extend(GF(p^m)).order(), (D_prime, E0, E_prime), pi):  # WHAT IS m HERE??? ANTONIN
         return None
 
-    J = O0 * 1
+    J = O * 1
 
     theta = IdealSuborderNormEquation(D_prime, J, I)
 
@@ -275,7 +269,7 @@ def KeyExchange(I, D_prime, E_prime, pi):
     G = set()
     for prime, multiplicity in T_facts:
         # J_i = O0 * ___ + O0 * prime^multiplicity
-        generating_point = SuborderEvaluation(E0, E_prime, pi, D_prime, J_i)  # THIS CAN BE None, HOW SHOULD THIS BE HANDLED??? ANTONIN
+        generating_point = SuborderEvaluation(p, B, O0, E0, E_prime, pi, D_prime, J_i)
         if generating_point is None:
             return None
         G.add(generating_point)
