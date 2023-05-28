@@ -1,5 +1,5 @@
 from itertools import chain, combinations
-from sage.all import CRT, DLP, GF, ProjectiveSpace, ZZ, Zmod, choice, factor, gcd, inverse_mod, mod
+from sage.all import CRT, DLP, GF, ProjectiveSpace, ZZ, Zmod, choice, factor, gcd, inverse_mod, mod, prod
 
 from deuring import randomideal
 from sqisign.deuring import IdealToIsogenyFromKLPT
@@ -190,6 +190,10 @@ def SuborderVerification(M, x, pi):
 
     return CheckTrace(M, E2, isogenies, generating_fam)
 
+
+def multidimensional_discrete_log(generators, target):
+    raise NotImplementedError()
+
 def SuborderEvaluation(E1, E2, pi, D, J):
     O, isogenies = pi
 
@@ -207,11 +211,16 @@ def SuborderEvaluation(E1, E2, pi, D, J):
 
     beta = IdealSuborderNormEquation(D, I, alpha^(-1) * J * alpha)
 
-    # EXPRESS SOMETHING AS LINEAR COMBINATION OF GENERATING FAMILY??? ANTONIN
+    generating_set = [B.one()] + [prod(subset) for subset in all_proper_nonempty_subsets(generating_fam)]
+    coeffs = multidimensional_discrete_log(generating_set, alpha * beta * alpha.inverse())
 
     P, Q = E2(0).division_points(J.norm()).basis()  # TURN INTO GROUP???
 
-    # EXPRESS SOMETHING AS LINEAR COMBINATION OF ISOGENIES OVER BASIS??? ANTONIN
+    R = S = E2(0)
+    isogeny_compositions = [E2.isogeny(E2(0))] + [prod(subset) for subset in all_proper_nonempty_subsets(isogenies)]
+    for coeff, isogeny in zip(coeffs, isogeny_compositions):
+        R += coeff * isogeny(P)
+        S += coeff * isogeny(Q)
 
     if S == 0:
         return Q
