@@ -294,7 +294,7 @@ def KeyExchange(params, I, D_prime, E_prime, pi):
     G = set()
     for prime, multiplicity in T_facts:
         # J_i = O0 * ___ + O0 * prime^multiplicity
-        generating_point = SuborderEvaluation(p, B, O0, E0, E_prime, pi, D_prime, J_i)
+        generating_point = SuborderEvaluation(params, E0, E_prime, pi, D_prime, J_i)
         if generating_point is None:
             return None
         G.add(generating_point)
