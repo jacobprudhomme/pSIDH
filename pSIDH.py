@@ -72,9 +72,9 @@ def SmoothGen(params, O, D):
     found_fam = False
     generating_fam = []
     while not found_fam:
-        I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True) # Same as RandomEquivalentPrimeIdeal()?
+        I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True)  # Same as RandomEquivalentPrimeIdeal
         while I is None:
-            I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True) # Same as RandomEquivalentPrimeIdeal()?
+            I, _, alpha = EquivalentPrimeIdealHeuristic(I0, random_elements=True)  # Same as RandomEquivalentPrimeIdeal
 
         theta = EichlerSuborderNormEquation(D, I)
 
@@ -94,8 +94,6 @@ def IdealToSuborder(params, I):
     B = params['B']
     O0 = params['O0']
 
-    # assert I.quaternion_algebra() == QuaternionAlgebra(_, _, _)
-
     D = I.norm()
     O = I.left_order()
     O_prime = I.right_order()
@@ -106,7 +104,7 @@ def IdealToSuborder(params, I):
         phi_i = IdealToIsogenyFromKLPT(O_prime * theta_i)
         isogenies.append(phi_i)
 
-    return O, isogenies  # Wait, these are isogenies... Shouldn't they be suborders? And later compute isogenies using Velu's formulas?
+    return O, isogenies
 
 
 def IdealSuborderNormEquation_helper(params, D, I, N, J, N_prime):
