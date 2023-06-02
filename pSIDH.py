@@ -20,16 +20,19 @@ def ConnectingIdeal(params, O1, O2):
     return I
 
 
-def EichlerSuborderNormEquation_helper(D, I, N):
+def EichlerSuborderNormEquation_helper(params, D, I, N):
+    ell = params['ell']
+    exp = params['exp']
+
     S = ProjectiveSpace(1, GF(D)).rational_points()
 
     P = choice(S)
     C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
-    mewtwo = StrongApproximationHeuristic(D, C2, D2)
+    mewtwo = StrongApproximationHeuristic(D, C2, D2, [(ell, exp)])
     while mewtwo is None:
         P = choice(S)
         C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
-        mewtwo = StrongApproximationHeuristic(D, C2, D2)
+        mewtwo = StrongApproximationHeuristic(D, C2, D2, [(ell, exp)])
 
     C0, D0 = EichlerModConstraint(mewtwo, I)
 
@@ -39,16 +42,18 @@ def EichlerSuborderNormEquation_helper(D, I, N):
     C1 = CRT([C0, C2_prime], [N, D])
     D1 = CRT([D0, D2_prime], [N, D])
 
-    return StrongApproximationHeuristic(N * D, C1, D1), mewtwo
+    mewone = StrongApproximationHeuristic(N * D, C1, D1, [(ell, exp)])
 
-def EichlerSuborderNormEquation(D, I):
+    return mewone, mewtwo
+
+def EichlerSuborderNormEquation(params, D, I):
     N = I.norm()
 
     assert gcd(N, D) == 1, 'N and D are not coprime'
 
-    mewone, mewtwo = EichlerSuborderNormEquation_helper(D, I, N)
+    mewone, mewtwo = EichlerSuborderNormEquation_helper(params, D, I, N)
     while mewone is None:
-        mewone, mewtwo = EichlerSuborderNormEquation_helper(D, I, N)
+        mewone, mewtwo = EichlerSuborderNormEquation_helper(params, D, I, N)
 
     return mewtwo * mewone
 
@@ -104,16 +109,19 @@ def IdealToSuborder(params, I):
     return O, isogenies  # Wait, these are isogenies... Shouldn't they be suborders? And later compute isogenies using Velu's formulas?
 
 
-def IdealSuborderNormEquation_helper(D, I, N, J, N_prime):
+def IdealSuborderNormEquation_helper(params, D, I, N, J, N_prime):
+    ell = params['ell']
+    exp = params['exp']
+
     S = ProjectiveSpace(1, GF(D)).rational_points()
 
     P = choice(S)
     C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
-    mewtwo = StrongApproximationHeuristic(D, C2, D2)
+    mewtwo = StrongApproximationHeuristic(D, C2, D2, [(ell, exp)])
     while mewtwo is None or gcd(mewtwo.norm(), N_prime) == 1:
         P = choice(S)
         C2, D2 = P.dehomogenize(0), P.dehomogenize(1)
-        mewtwo = StrongApproximationHeuristic(D, C2, D2)
+        mewtwo = StrongApproximationHeuristic(D, C2, D2, [(ell, exp)])
 
     C0, D0 = EichlerModConstraint(mewtwo, I)
     C3, D3 = IdealModConstraint(mewtwo, J)
@@ -124,17 +132,19 @@ def IdealSuborderNormEquation_helper(D, I, N, J, N_prime):
     C1 = CRT([C0, C2_prime, C3], [N, D, N_prime])
     D1 = CRT([D0, D2_prime, D3], [N, D, N_prime])
 
-    return StrongApproximationHeuristic(N * D * N_prime, C1, D1), mewtwo
+    mewone = StrongApproximationHeuristic(N * D * N_prime, C1, D1, [(ell, exp)])
 
-def IdealSuborderNormEquation(D, I, J):
+    return mewone, mewtwo
+
+def IdealSuborderNormEquation(params, D, I, J):
     N = I.norm()
     N_prime = J.norm()
 
     assert gcd(N, N_prime) == 1 and gcd(N, D) == 1 and gcd(N_prime, D) == 1, "N, N' and D are not coprime"
 
-    mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
+    mewone, mewtwo = IdealSuborderNormEquation_helper(params, D, I, N, J, N_prime)
     while mewone is None:
-        mewone, mewtwo = IdealSuborderNormEquation_helper(D, I, N, J, N_prime)
+        mewone, mewtwo = IdealSuborderNormEquation_helper(params, D, I, N, J, N_prime)
 
     return mewtwo * mewone
 

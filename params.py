@@ -27,6 +27,6 @@ complete_params(p_toy)
 p6983 = {
     'p': 73743043621499797449074820543863456997944695372324032511999999999999999999999,
     'ell': 2,  # Global small prime parameter used in places like StrongApproximation
-    'e': 1000,  # Large enough exponent to find elements of wanted norm in Ideal/EichlerSuborderNormEquation
+    'exp': 1000,  # Large enough exponent to find elements of wanted norm in Ideal/EichlerSuborderNormEquation
 }
 complete_params(p6983)
