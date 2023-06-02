@@ -208,6 +208,18 @@ def SuborderVerification(params, M, x, pi):
     return CheckTrace(params, M, E2, isogenies, generating_fam)
 
 
+def find_large_enough_M(E, generating_fam):
+    n = len(generating_fam)
+    target_M = max([2 * sqrt(gen.norm()^n) for gen in generating_fam])
+
+    m = 1
+    M = E.count_points(m)[-1]
+    while M <= target_M:
+        m += 1
+        M = E.count_points(m)[-1]
+
+    return M
+
 def multidimensional_discrete_log(generators, target):
     raise NotImplementedError()
 
@@ -220,10 +232,12 @@ def SuborderEvaluation(params, E1, E2, pi, D, J):
     if J.left_order() != O:
         return None
 
-    if not SuborderVerification(B, O0, E1.base_extend(GF(p^m)).order(), (D, E1, E2), pi):  # WHAT IS m HERE??? ANTONIN
+    generating_fam = SmoothGen(B, O0, O, D)
+
+    M = find_large_enough_M(E1, generating_fam)
+    if not SuborderVerification(B, O0, M, (D, E1, E2), pi):
         return None
 
-    generating_fam = SmoothGen(B, O0, O, D)
     L = ConnectingIdeal(B, O0, O)
     I, _, alpha = EquivalentPrimeIdealHeuristic(L, random_elements=True)  # Same as RandomEquivalentPrimeIdeal()?
     while I is None:
@@ -282,7 +296,8 @@ def KeyExchange(params, I, D_prime, E_prime, pi):
 
     generating_fam = SmoothGen(params, O, D_prime)
 
-    if not SuborderVerification(params, E_prime.base_extend(GF(p^m)).order(), (D_prime, E0, E_prime), pi):  # WHAT IS m HERE??? ANTONIN
+    M = find_large_enough_M(E_prime, generating_fam)
+    if not SuborderVerification(params, M, (D_prime, E0, E_prime), pi):
         return None
 
     J = O * 1
