@@ -47,3 +47,5 @@ assert alice_shared_secret == bob_shared_secret, 'Key exchange failed: the share
 - [ ] Allow public-key validation to be omitted
 
 - [ ] Verify that suborder representations are correctly represented in code
+
+- [ ] De-duplicate code from SuborderVerification

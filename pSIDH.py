@@ -6,6 +6,8 @@ from sqisign.deuring import IdealToIsogenyFromKLPT
 from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, IdealModConstraint, StrongApproximationHeuristic
 
 
+# Finds a connecting ideal I between O1 and O2
+# i.e., an O1-left ideal and O2-right ideal
 def ConnectingIdeal(params, O1, O2):
     B = params['B']
 
@@ -46,6 +48,7 @@ def EichlerSuborderNormEquation_helper(params, D, I, N):
 
     return mewone, mewtwo
 
+# Finds an element of wanted norm in the Eichler suborder ZZ + D*I
 def EichlerSuborderNormEquation(params, D, I):
     N = I.norm()
 
@@ -57,6 +60,7 @@ def EichlerSuborderNormEquation(params, D, I):
 
     return mewtwo * mewone
 
+# Computes a set of 3 elements in the suborder ZZ + D*O, which generate it
 def SmoothGen(params, O, D):
     B = params['B']
     O0 = params['O0']
@@ -90,6 +94,7 @@ def SmoothGen(params, O, D):
     return generating_fam
 
 
+# Takes the ideal representation of an isogeny and converts it to suborder representation
 def IdealToSuborder(params, I):
     B = params['B']
     O0 = params['O0']
@@ -134,6 +139,7 @@ def IdealSuborderNormEquation_helper(params, D, I, N, J, N_prime):
 
     return mewone, mewtwo
 
+# Finds an element of wanted norm in some intersection of ideals (ZZ + D*I) `intersect` J
 def IdealSuborderNormEquation(params, D, I, J):
     N = I.norm()
     N_prime = J.norm()
@@ -156,6 +162,7 @@ def powerset(iter, include_emptyset=True):
         for size in range(0 if include_emptyset else 1, length + 1)
     )
 
+# Checks that the trace of the given endomorphisms all match their corresponding isogeny
 def CheckTrace(params, M, E, isogenies, generating_fam):
     p = params['p']
 
@@ -178,6 +185,7 @@ def CheckTrace(params, M, E, isogenies, generating_fam):
 
     return True
 
+# Given a suborder representation, runs public-key validation on it
 def SuborderVerification(params, M, x, pi):
     p = params['p']
     O0 = params['O0']
@@ -224,6 +232,8 @@ def find_large_enough_M(E, generating_fam):
 def multidimensional_discrete_log(generators, target):
     raise NotImplementedError()
 
+# Given the other party's public parameters/suborder representation
+# as well as your own, compute the kernel of the resulting isogeny composition
 def SuborderEvaluation(params, E1, E2, pi, D, J):
     p = params['p']
     B = params['B']
@@ -266,6 +276,7 @@ def SuborderEvaluation(params, E1, E2, pi, D, J):
     return P - a * Q
 
 
+# Generate a secret ideal representing an isogeny, and its public suborder representation
 def KeyGeneration(params):
     B = params['B']
     O0 = params['O0']
@@ -285,6 +296,7 @@ def KeyGeneration(params):
     return (E, pi), (I, D)
 
 
+# Do the complete pSIDH key exchange
 def KeyExchange(params, I, D_prime, E_prime, pi):
     p = params['p']
     B = params['B']
