@@ -62,7 +62,7 @@ def SmoothGen(params, O, D):
     L = set()
     I0 = ConnectingIdeal(params, O0, O)
 
-    target_order = ZZ + D * O
+    # Missing description of ZZ + D * O in target_order = ZZ + D * O, wait for Dr. Leroux's answer
 
     found_fam = False
     generating_fam = []
@@ -293,7 +293,7 @@ def KeyExchange(params, I, D_prime, E_prime, pi):
 
     G = set()
     for prime, multiplicity in T_facts:
-        # J_i = O0 * ___ + O0 * prime^multiplicity
+        # Missing alpha in J_i = O * (alpha.inverse() * theta * alpha).conjugate() + O * prime^multiplicity, wait for Dr. Leroux's answer
         generating_point = SuborderEvaluation(params, E0, E_prime, pi, D_prime, J_i)
         if generating_point is None:
             return None
