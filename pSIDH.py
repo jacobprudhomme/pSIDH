@@ -179,6 +179,7 @@ def CheckTrace(params, M, E, isogenies, generating_fam):
     return True
 
 def SuborderVerification(params, M, x, pi):
+    p = params['p']
     O0 = params['O0']
     D, E1, E2 = x
     O, isogenies = pi
