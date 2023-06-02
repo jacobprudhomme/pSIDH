@@ -30,20 +30,20 @@ assert alice_shared_secret == bob_shared_secret, 'Key exchange failed: the share
 
 ## Todo
 
-[ ] Wait for Dr. Leroux to give the precise meaning of Z + DO
+- [ ] Wait for Dr. Leroux to give the precise meaning of Z + DO
 
-[ ] Wait for Dr. Leroux's answer on the nature of the alpha variable found in KeyExchange
+- [ ] Wait for Dr. Leroux's answer on the nature of the alpha variable found in KeyExchange
 
-[ ] Implement multidimensional DLP for use in SuborderEvaluation
+- [ ] Implement multidimensional DLP for use in SuborderEvaluation
 
-[ ] Implement efficient way of obtaining the integer T we need in KeyExchange
+- [ ] Implement efficient way of obtaining the integer T we need in KeyExchange
 
-[ ] Verify that RandomEquivalentPrimeIdeal finds an ideal of relatively close norm to the original. If so, implement a new way of generating an ideal of norm D. If not, go back to the drawing board
+- [ ] Verify that RandomEquivalentPrimeIdeal finds an ideal of relatively close norm to the original. If so, implement a new way of generating an ideal of norm D. If not, go back to the drawing board
 
-[ ] Include all assertions found in the pseudocode
+- [ ] Include all assertions found in the pseudocode
 
-[ ] Wrap key exchange in class to hold global parameters we are currently generating externally. Use constructor to set these
+- [ ] Wrap key exchange in class to hold global parameters we are currently generating externally. Use constructor to set these
 
-[ ] Allow public-key validation to be omitted
+- [ ] Allow public-key validation to be omitted
 
-[ ] Verify that suborder representations are correctly represented in code
+- [ ] Verify that suborder representations are correctly represented in code
