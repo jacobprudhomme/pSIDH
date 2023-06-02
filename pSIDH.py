@@ -6,7 +6,9 @@ from sqisign.deuring import IdealToIsogenyFromKLPT
 from sqisign.KLPT import EichlerModConstraint, EquivalentPrimeIdealHeuristic, IdealModConstraint, StrongApproximationHeuristic
 
 
-def ConnectingIdeal(B, O1, O2):
+def ConnectingIdeal(params, O1, O2):
+    B = params['B']
+
     assert O1.discriminant() == B.discriminant(), 'O1 is not a maximal ideal'
     assert O2.discriminant() == B.discriminant(), 'O2 is not a maximal ideal'
 
@@ -50,9 +52,12 @@ def EichlerSuborderNormEquation(D, I):
 
     return mewtwo * mewone
 
-def SmoothGen(B, O0, O, D):
+def SmoothGen(params, O, D):
+    B = params['B']
+    O0 = params['O0']
+
     L = set()
-    I0 = ConnectingIdeal(B, O0, O)
+    I0 = ConnectingIdeal(params, O0, O)
 
     target_order = ZZ + D * O
 
@@ -77,8 +82,11 @@ def SmoothGen(B, O0, O, D):
     return generating_fam
 
 
-def IdealToSuborder(B, O0, I):
-    # assert(I.quaternion_algebra() == QuaternionAlgebra(_, _, _))
+def IdealToSuborder(params, I):
+    B = params['B']
+    O0 = params['O0']
+
+    # assert I.quaternion_algebra() == QuaternionAlgebra(_, _, _)
 
     D = I.norm()
     O = I.left_order()
@@ -156,15 +164,16 @@ def CheckTrace(M, E, isogenies, generating_fam):
 
     return True
 
-def SuborderVerification(B, O0, M, x, pi):
+def SuborderVerification(params, M, x, pi):
+    O0 = params['O0']
     D, E1, E2 = x
     O, isogenies = pi
 
     if O.discriminant() != p:
         return False
 
-    generating_fam = SmoothGen(B, O0, O, D)
-    J = ConnectingIdeal(B, O0, O)
+    generating_fam = SmoothGen(params, O, D)
+    J = ConnectingIdeal(params, O0, O)
     L = EquivalentPrimeIdealHeuristic(J)
     while L is None:
         L = EquivalentPrimeIdealHeuristic(J)
@@ -188,7 +197,10 @@ def SuborderVerification(B, O0, M, x, pi):
 def multidimensional_discrete_log(generators, target):
     raise NotImplementedError()
 
-def SuborderEvaluation(p, B, O0, E1, E2, pi, D, J):
+def SuborderEvaluation(params, E1, E2, pi, D, J):
+    p = params['p']
+    B = params['B']
+    O0 = params['O0']
     O, isogenies = pi
 
     if J.left_order() != O:
@@ -225,14 +237,17 @@ def SuborderEvaluation(p, B, O0, E1, E2, pi, D, J):
     return P - a * Q
 
 
-def KeyGeneration(B, O0):
+def KeyGeneration(params):
+    B = params['B']
+    O0 = params['O0']
+
     I = randomideal(O0)
     D = I.norm()
     while not D.is_prime():
         I = randomideal(O0)
         D = I.norm()
 
-    pi = IdealToSuborder(B, O0, I)
+    pi = IdealToSuborder(params, I)
     _, isogenies = pi
 
     E = isogenies[0].domain()
@@ -241,16 +256,19 @@ def KeyGeneration(B, O0):
     return (E, pi), (I, D)
 
 
-def KeyExchange(p, B, E0, O0, I, D_prime, E_prime, pi):
+def KeyExchange(params, I, D_prime, E_prime, pi):
+    p = params['p']
+    B = params['B']
+    E0 = params['E0']
     D = I.norm()
 
     assert D != D_prime, "D and D' should be different"
 
     O, isogenies = pi
 
-    generating_fam = SmoothGen(B, O0, O, D_prime)
+    generating_fam = SmoothGen(params, O, D_prime)
 
-    if not SuborderVerification(B, O0, E_prime.base_extend(GF(p^m)).order(), (D_prime, E0, E_prime), pi):  # WHAT IS m HERE??? ANTONIN
+    if not SuborderVerification(params, E_prime.base_extend(GF(p^m)).order(), (D_prime, E0, E_prime), pi):  # WHAT IS m HERE??? ANTONIN
         return None
 
     J = O * 1
