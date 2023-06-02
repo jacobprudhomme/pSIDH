@@ -136,13 +136,13 @@ def IdealSuborderNormEquation(D, I, J):
     return mewtwo * mewone
 
 
-def all_proper_nonempty_subsets(iter):
+def powerset(iter, include_emptyset=True):
     lst = list(iter)
     length = len(lst)
 
     return chain.from_iterable(
         combinations(lst, size)
-        for size in range(1, length)
+        for size in range(0 if include_emptyset else 1, length + 1)
     )
 
 def CheckTrace(M, E, isogenies, generating_fam):
@@ -150,7 +150,7 @@ def CheckTrace(M, E, isogenies, generating_fam):
 
     P, Q = E(0).division_points(M).basis()  # TURN INTO GROUP???
 
-    for I in all_proper_nonempty_subsets(range(len(isogenies))):  # IS IT REALLY JUST PROPER SUBSETS??? ANTONIN
+    for I in powerset(range(len(isogenies)), include_emptyset=False):
         theta_I = generating_fam[0]
         phi_I = isogenies[0]
         for i in I[1:]:
@@ -217,14 +217,14 @@ def SuborderEvaluation(params, E1, E2, pi, D, J):
 
     beta = IdealSuborderNormEquation(D, I, alpha^(-1) * J * alpha)
 
-    generating_set = [B.one()] + [prod(subset) for subset in all_proper_nonempty_subsets(generating_fam)]
+    generating_set = [prod(subset, B.one()) for subset in powerset(generating_fam)]
     coeffs = multidimensional_discrete_log(generating_set, alpha * beta * alpha.inverse())
 
     # Is E2 guaranteed to have 2 generators (i.e. it is the product of 2 cyclic groups)?
     P, Q = [((p + 1) / J.norm()) * G for G in E2.gens()]  # From https://github.com/jack4818/Castryck-Decru-SageMath
 
     R = S = E2(0)
-    isogeny_compositions = [E2.isogeny(E2(0))] + [prod(subset) for subset in all_proper_nonempty_subsets(isogenies)]
+    isogeny_compositions = [prod(subset, E2.isogeny(E2(0))) for subset in powerset(isogenies)]
     for coeff, isogeny in zip(coeffs, isogeny_compositions):
         R += coeff * isogeny(P)
         S += coeff * isogeny(Q)
