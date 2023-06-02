@@ -56,6 +56,9 @@ def SmoothGen(params, O, D):
     B = params['B']
     O0 = params['O0']
 
+    assert O.discriminant() == B.discriminant(), 'O is not a maximal order'
+    assert D.is_prime(), 'D is not prime'
+
     L = set()
     I0 = ConnectingIdeal(params, O0, O)
 
