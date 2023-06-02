@@ -1,5 +1,5 @@
 # pSIDH
-Implementation of pSIDH post-quantum cryptographic key exchange described in https://eprint.iacr.org/2021/1600, for my semester research project in EPFL's LASEC lab.
+Implementation of pSIDH post-quantum cryptographic key exchange described in https://eprint.iacr.org/2021/1600, for my semester research project in EPFL's [LASEC](https://lasec.epfl.ch) lab.
 
 ## Prerequisites
 
