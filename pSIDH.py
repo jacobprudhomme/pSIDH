@@ -145,10 +145,13 @@ def powerset(iter, include_emptyset=True):
         for size in range(0 if include_emptyset else 1, length + 1)
     )
 
-def CheckTrace(M, E, isogenies, generating_fam):
+def CheckTrace(params, M, E, isogenies, generating_fam):
+    p = params['p']
+
     assert len(isogenies) == len(generating_fam), 'The number of isogenies and elements in the generating family should be the same'
 
-    P, Q = E(0).division_points(M).basis()  # TURN INTO GROUP???
+    # Is E2 guaranteed to have 2 generators (i.e. it is the product of 2 cyclic groups)?
+    P, Q = [((p + 1) / M) * G for G in E.gens()]  # From https://github.com/jack4818/Castryck-Decru-SageMath
 
     for I in powerset(range(len(isogenies)), include_emptyset=False):
         theta_I = generating_fam[0]
@@ -191,7 +194,7 @@ def SuborderVerification(params, M, x, pi):
         if F_i.j_invariant() != E2.j_invariant():
             return False
 
-    return CheckTrace(M, E2, isogenies, generating_fam)
+    return CheckTrace(params, M, E2, isogenies, generating_fam)
 
 
 def multidimensional_discrete_log(generators, target):
