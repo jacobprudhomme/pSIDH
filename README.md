@@ -3,7 +3,7 @@ Implementation of pSIDH post-quantum cryptographic key exchange described in htt
 
 ## Prerequisites
 
-Sage release 9.8 is required to run this code. Compatibility is not guaranteed with newer versions.
+Sage release 9.8 is required to run this code, with any version of Python 3.8+. Compatibility is not guaranteed with newer versions of Sage, but it is unlikely to be an issue.
 
 ## Getting Started
 
